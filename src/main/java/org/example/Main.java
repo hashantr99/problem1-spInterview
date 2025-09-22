@@ -65,6 +65,10 @@ public class Main {
         String largestPossibleNumber = largestNumber();
         System.out.println("Largest Possible Number: "+largestPossibleNumber);
 
+
+        // ---------------------------- problem 05 ------------------------//
+        findCombinations(1, "1", 1);
+
     }
 
 
@@ -190,6 +194,48 @@ public class Main {
         str = str.replaceAll("\\D+", "");
         //System.out.println(str);
         return str;
+    }
+
+
+   //------------------------- Methods related to problem 05 -------------------------------------//
+    private static void findCombinations(int currentNum, String currentExpression, int currentSum) {
+        if (currentNum == 9) { // Base case: all numbers processed
+            if (currentSum == 100) {
+                System.out.println(currentExpression + " = 100");
+            }
+            return;
+        }
+
+        // Option 1: Add '+'
+        findCombinations(currentNum + 1, currentExpression + "+" + (currentNum + 1), currentSum + (currentNum + 1));
+
+        // Option 2: Add '-'
+        findCombinations(currentNum + 1, currentExpression + "-" + (currentNum + 1), currentSum - (currentNum + 1));
+
+        // Option 3: Concatenate (nothing between numbers)
+        // This is more complex as it involves modifying the last number in the sum.
+        // We need to extract the last number, remove it from the sum,
+        // and add the newly formed concatenated number.
+        int lastNumberInExpression;
+        String lastNumberAsString;
+        int lastOperatorIndexPlus = currentExpression.lastIndexOf('+');
+        int lastOperatorIndexMinus = currentExpression.lastIndexOf('-');
+
+        if (lastOperatorIndexPlus > lastOperatorIndexMinus) { // Last operator was '+'
+            lastNumberAsString = currentExpression.substring(lastOperatorIndexPlus + 1);
+            lastNumberInExpression = Integer.parseInt(lastNumberAsString);
+            int newNumber = lastNumberInExpression * 10 + (currentNum + 1);
+            findCombinations(currentNum + 1, currentExpression.substring(0, lastOperatorIndexPlus + 1) + newNumber, currentSum - lastNumberInExpression + newNumber);
+        } else if (lastOperatorIndexMinus > lastOperatorIndexPlus) { // Last operator was '-'
+            lastNumberAsString = currentExpression.substring(lastOperatorIndexMinus + 1);
+            lastNumberInExpression = Integer.parseInt(lastNumberAsString);
+            int newNumber = lastNumberInExpression * 10 + (currentNum + 1);
+            findCombinations(currentNum + 1, currentExpression.substring(0, lastOperatorIndexMinus + 1) + newNumber, currentSum + lastNumberInExpression - newNumber);
+        } else { // No operator yet (first number or concatenated from the beginning)
+            lastNumberInExpression = Integer.parseInt(currentExpression);
+            int newNumber = lastNumberInExpression * 10 + (currentNum + 1);
+            findCombinations(currentNum + 1, String.valueOf(newNumber), newNumber);
+        }
     }
 
 
